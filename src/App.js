@@ -6,6 +6,7 @@ import Signup from './pages/Signup';
 import Attendance from './pages/Attendance';
 import QRpage from './pages/QRpage';
 import Class from './pages/Class';
+import AllClasses from './pages/AllClasses';
 import {
   BrowserRouter,
   RouterProvider,
@@ -24,6 +25,7 @@ function App() {
      <Route path ="/attendance" element={<Attendance />}/>
      <Route path ="/qr" element={<QRpage />}/>
      <Route path ="/class" element={<Class />}/>
+     <Route path ="/all_classes" element={<AllClasses />}/>
      </Routes>
       </BrowserRouter>
   

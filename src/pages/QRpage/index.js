@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { BACKEND_URL } from "../../config";
 import NavbarComponent from '../../components/Navbar';
@@ -10,13 +10,19 @@ import { render } from "react-dom";
 import { QRCode } from "react-qr-svg";
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
-function QRpage() {
-    const [showField1, setShowField1] = useState(true);
-    const [showField2, setShowField2] = useState(false);
-    const [email, setEmail] = useState("")
-    const [error, setErrorMessage] = useState("")
-    const [otp, setOTP] = useState("")
-
+import { useLocation } from 'react-router-dom';
+import { useNavigate } from "react-router-dom"
+import Spinner from '../../components/spinner';
+function QRpage(props) {
+    const { state } = useLocation();
+    const navigate = useNavigate();
+    const [qrdata, setQRdata] = useState({})
+    const [show,setShow]=useState(false)
+    const apiData = state.data;
+    const class_name=apiData.class;
+    const additional=apiData.add;
+    const auth_type=apiData.auth;
+    console.log(apiData)
     const styles = {
 
         qrcode: {
@@ -24,9 +30,114 @@ function QRpage() {
             marginTop:"50px"
         }
     };
+
+    const callAPI = async () => {
+        //fetching class data
+        fetch(BACKEND_URL + '/teacher/generate_qr', {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+            withCredentials: true
+          },
+          body:JSON.stringify({class_name,additional,auth_type }),
+         
+        })
+  
+          .then(async (response) => {
+            const data = await response.json();
+            if (data.success && data.data && data.data.status === 'SUCCESS') {
+              
+              setQRdata(data.data)
+            } else {
+              alert("Problem fetching data")
+  
+            }
+          })
+          .catch((error) => {
+           alert(error)
+  
+          });
+          setShow(true);
+          
+      };
+    
+  useEffect(() => {
+
+    fetch(BACKEND_URL + '/teacher/@me', {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          withCredentials: true
+        },
+       
+  
+      })
+  
+        .then(async (response) => {
+          const data = await response.json();
+          if (data.success && data.data && data.data.status === 'SUCCESS') {
+  
+            ;
+  
+  
+          } else {
+            navigate("/");
+  
+          }
+        })
+        .catch((error) => {
+          navigate("/");
+  
+        });
+  
+ 
+    const interval = setInterval(callAPI, 3000); 
+
+    return () => clearInterval(interval);
+  }, []);
+
+
+
+  const handleStop = () => {
+    
+    fetch(BACKEND_URL + '/teacher/stop_qr', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          withCredentials: true
+        },
+        body:JSON.stringify({class_name,additional,auth_type }),
+       
+      })
+
+        .then(async (response) => {
+          const data = await response.json();
+          if (data.success && data.data && data.data.status === 'SUCCESS') {
+            
+            navigate("/home");
+          } else {
+            alert("Problem fetching data")
+
+          }
+        })
+        .catch((error) => {
+         alert(error)
+
+        });
+        
+    };
+
+
+  
+
+
     return (
         <div>
             <NavbarComponent />
+            {show?(
             <Container style={{ marginTop: "50px" }}>
 
                 <Row>
@@ -50,15 +161,11 @@ function QRpage() {
                             <QRCode
                                 level="Q"
                                 style={{ width: 350 }}
-                                value={JSON.stringify({
-                                    destinatary: "KWIK-E-MART",
-                                    dynamic: false,
-                                    amount: 1500
-                                })}
+                                value={JSON.stringify(qrdata)}
                             />
                         </div>
                         <div style={{marginTop:"50px",marginLeft:"350px"}}>
-                        <Button variant="outline-primary">Stop Attendance</Button>{' '}
+                        <Button variant="outline-primary" onClick={handleStop}>Stop Attendance</Button>{' '}
                         </div>
                     </Col>
                     <Col>
@@ -141,7 +248,12 @@ function QRpage() {
                         </div>
                     </Col>
                 </Row>
-            </Container>
+            </Container>):(
+                <div style={{width:"200%",marginTop:"200px",marginLeft:"750px"}}>
+                    <Spinner />
+                    <h5 style={{marginTop:"20px",marginLeft:"-95px"}} >We take a 3 seconds sleep time</h5>
+                    </div>
+            )};
         </div>
     );
 }
