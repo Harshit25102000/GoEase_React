@@ -42,7 +42,7 @@ function QRpage() {
                             </Col>
                             <Col>
                                 <p>Attendance Percentage</p>
-                                <h2 style={{ color: "#5cd65c" }}>30</h2>
+                                <h2 style={{ color: "#5cd65c" }}>30 %</h2>
                             </Col>
                         </Row>
 
