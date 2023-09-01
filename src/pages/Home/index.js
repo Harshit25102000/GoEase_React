@@ -15,7 +15,7 @@ function Home() {
   const [email, setEmail] = useState("")
   const [error, setErrorMessage] = useState("")
   const [otp, setOTP] = useState("")
-
+  
 
   return (
     <div>

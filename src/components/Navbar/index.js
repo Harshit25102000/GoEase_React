@@ -20,7 +20,11 @@ export default function NavbarComponent() {
       </Nav.Menu>
     </Nav>
     <Nav pullRight>
-      <Nav.Item icon={<CogIcon />}>Settings</Nav.Item>
+    <Nav.Menu title="My Account">
+        <Nav.Item>Log Out</Nav.Item>
+        
+        
+      </Nav.Menu>
     </Nav>
   </Navbar>
     );
