@@ -17,6 +17,7 @@ function QRpage(props) {
     const { state } = useLocation();
     const navigate = useNavigate();
     const [qrdata, setQRdata] = useState({})
+    const [names, setNames] = useState([])
     const [show,setShow]=useState(false)
     const apiData = state.data;
     const class_name=apiData.class;
@@ -61,6 +62,43 @@ function QRpage(props) {
           setShow(true);
           
       };
+
+
+
+      const getNames = async () => {
+        //fetching class data
+      
+        fetch(BACKEND_URL + '/teacher/get_attendance_names', {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+            withCredentials: true
+          },
+          body:JSON.stringify({class_name}),
+         
+        })
+  
+          .then(async (response) => {
+            const data = await response.json();
+            if (data.success && data.data && data.data.status === 'SUCCESS') {
+              
+              setNames(data.data.data)
+              console.log(names)
+            } else {
+              console.log("No attendees")
+  
+            }
+          })
+          .catch((error) => {
+           alert(error)
+  
+          });
+          setShow(true);
+          
+      };
+
+    
     
   useEffect(() => {
 
@@ -92,10 +130,16 @@ function QRpage(props) {
   
         });
   
- 
-    const interval = setInterval(callAPI, 3000); 
+        const intervalA = setInterval(callAPI, 3000); 
+    const intervalB = setInterval(getNames, 1000); 
+   
+    
+    
 
-    return () => clearInterval(interval);
+    return () => {
+        clearInterval(intervalA);
+        clearInterval(intervalB);
+      };
   }, []);
 
 
@@ -171,80 +215,17 @@ function QRpage(props) {
                     <Col>
                         <h5 style={{ marginBottom: "30px" }}>Current Attendees</h5>
                         <div style={{ overflowY: "scroll", height: "510px" }}>
-                        <MDBListGroup light numbered style={{ minWidth: '22rem' }}>
+                        {names && names.map((name, index) => (
+                        <MDBListGroup key = {index} light numbered style={{ minWidth: '22rem' }}>
                             <MDBListGroupItem className='d-flex justify-content-between align-items-start'>
                                 <div className='ms-2 me-auto'>
-                                    <div className='fw-bold'>Harshit</div>20070122050
+                                    <div className='fw-bold'>{name.name}</div>{name.prn}
                                 </div>
 
                             </MDBListGroupItem>
-                            <MDBListGroupItem className='d-flex justify-content-between align-items-start'>
-                                <div className='ms-2 me-auto'>
-                                    <div className='fw-bold'>Harshit</div>20070122050
-                                </div>
-
-                            </MDBListGroupItem>
-                            <MDBListGroupItem className='d-flex justify-content-between align-items-start'>
-                                <div className='ms-2 me-auto'>
-                                    <div className='fw-bold'>Harshit</div>20070122050
-                                </div>
-
-                            </MDBListGroupItem>
-                            <MDBListGroupItem className='d-flex justify-content-between align-items-start'>
-                                <div className='ms-2 me-auto'>
-                                    <div className='fw-bold'>Harshit</div>20070122050
-                                </div>
-
-                            </MDBListGroupItem>
-                            <MDBListGroupItem className='d-flex justify-content-between align-items-start'>
-                                <div className='ms-2 me-auto'>
-                                    <div className='fw-bold'>Harshit</div>20070122050
-                                </div>
-
-                            </MDBListGroupItem>
-                            <MDBListGroupItem className='d-flex justify-content-between align-items-start'>
-                                <div className='ms-2 me-auto'>
-                                    <div className='fw-bold'>Harshit</div>20070122050
-                                </div>
-
-                            </MDBListGroupItem>
-                            <MDBListGroupItem className='d-flex justify-content-between align-items-start'>
-                                <div className='ms-2 me-auto'>
-                                    <div className='fw-bold'>Harshit</div>20070122050
-                                </div>
-
-                            </MDBListGroupItem>
-                            <MDBListGroupItem className='d-flex justify-content-between align-items-start'>
-                                <div className='ms-2 me-auto'>
-                                    <div className='fw-bold'>Harshit</div>20070122050
-                                </div>
-
-                            </MDBListGroupItem>
-                            <MDBListGroupItem className='d-flex justify-content-between align-items-start'>
-                                <div className='ms-2 me-auto'>
-                                    <div className='fw-bold'>Harshit</div>20070122050
-                                </div>
-
-                            </MDBListGroupItem>
-                            <MDBListGroupItem className='d-flex justify-content-between align-items-start'>
-                                <div className='ms-2 me-auto'>
-                                    <div className='fw-bold'>Harshit</div>20070122050
-                                </div>
-
-                            </MDBListGroupItem>
-                            <MDBListGroupItem className='d-flex justify-content-between align-items-start'>
-                                <div className='ms-2 me-auto'>
-                                    <div className='fw-bold'>Harshit</div>20070122050
-                                </div>
-
-                            </MDBListGroupItem>
-                            <MDBListGroupItem className='d-flex justify-content-between align-items-start'>
-                                <div className='ms-2 me-auto'>
-                                    <div className='fw-bold'>Harshit</div>20070122050
-                                </div>
-
-                            </MDBListGroupItem>
+                          
                         </MDBListGroup>
+                                ))}
                         </div>
                     </Col>
                 </Row>

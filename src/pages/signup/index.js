@@ -95,6 +95,7 @@ function Signup() {
       console.log(BACKEND_URL)
       fetch(`${BACKEND_URL}/teacher/send_signup_otp`, {
         method: 'POST',
+       
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
